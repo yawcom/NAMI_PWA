@@ -34,14 +34,14 @@ class StartScene extends Phaser.Scene {
         const instructionsText = this.add.text(config.width / 2, config.height / 3-30, 
             'Guida la tua nave pirata attraverso mari insidiosi, raccogli il maggior\n numero di forzieri schiva le isole \nper conquistare la gloria dei sette mari!', {
             fontFamily: 'Arial',
-            fontSize: '14px',
-            fontStyle: 'italic',
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 2,
+            fontSize: '16px',
+            fontStyle: 'bold',
+            color: '#000',
+            //stroke: '#fff',
+            //strokeThickness: 0.5,
             align: 'center',
             wordWrap: { width: config.width * 0.8 }
-        }).setOrigin(0.5).setShadow(2, 2, '#000000', 2, false, true);
+        }).setOrigin(0.5);//.setShadow(2, 2, '#000000', 2, false, true);
 
         instructionsText.setText('');
         const fullText = 'Guida la tua nave pirata attraverso mari insidiosi, raccogli il maggior\n numero di forzieri schiva le isole \nper conquistare la gloria dei sette mari!';
@@ -557,18 +557,93 @@ class GameScene extends Phaser.Scene {
     }
 
     collectChest(ship, chest) {
-        if (ship.x > chest.x) {
+        // Only collect the chest if the ship is passing over it (ship's y position is above the chest)
+        if (ship.x < chest.x) {
+            // Create the +10 score text effect at the chest's position
+            const scorePopup = this.add.text(chest.x, chest.y, '+10 punti!!', {
+                fontFamily: 'Arial',
+                fontSize: '24px',
+                fontStyle: 'bold',
+                color: '#ffff00',
+                stroke: '#000000',
+                strokeThickness: 4
+            }).setOrigin(0.5);
+            
+            // Add animation effects to the score popup
+            this.tweens.add({
+                targets: scorePopup,
+                y: chest.y - 50, // Move upward
+                alpha: { from: 1, to: 0 }, // Fade out
+                scale: { from: 1, to: 1.5 }, // Grow slightly
+                duration: 1000,
+                ease: 'Power2',
+                onComplete: () => {
+                    scorePopup.destroy(); // Remove when animation completes
+                }
+            });
+            
+            // Add a small flash effect
+            const flash = this.add.circle(chest.x, chest.y, 40, 0xffff00, 0.7);
+            flash.setDepth(3);
+            
+            this.tweens.add({
+                targets: flash,
+                scale: 2,
+                alpha: 0,
+                duration: 300,
+                onComplete: () => {
+                    flash.destroy();
+                }
+            });
+            
             chest.destroy();
             gameSettings.score += 10;
             this.scoreText.setText(`Punteggio: ${gameSettings.score}`);
         }
-        //chest.destroy();
-        //gameSettings.score += 10;
-        //this.scoreText.setText(`Punteggio: ${gameSettings.score}`);
     }
 
     hitObstacle(ship, obstacle) {
         if (ship.x > obstacle.x && !this.isInvulnerable) {
+            // Create the -1 life text effect at the obstacle's position
+            const damagePopup = this.add.text(obstacle.x, obstacle.y, '-1 vita!', {
+                fontFamily: 'Arial',
+                fontSize: '24px',
+                fontStyle: 'bold',
+                color: '#ff3333',
+                stroke: '#000000',
+                strokeThickness: 4
+            }).setOrigin(0.5);
+            
+            // Add animation effects to the damage popup
+            this.tweens.add({
+                targets: damagePopup,
+                y: obstacle.y - 50, // Move upward
+                alpha: { from: 1, to: 0 }, // Fade out
+                scale: { from: 1, to: 1.5 }, // Grow slightly
+                duration: 1000,
+                ease: 'Power2',
+                onComplete: () => {
+                    damagePopup.destroy(); // Remove when animation completes
+                }
+            });
+            
+            // Add a red flash effect
+            const flash = this.add.circle(obstacle.x, obstacle.y, 40, 0xff0000, 0.7);
+            flash.setDepth(3);
+            
+            this.tweens.add({
+                targets: flash,
+                scale: 2,
+                alpha: 0,
+                duration: 300,
+                onComplete: () => {
+                    flash.destroy();
+                }
+            });
+            
+            // Add screen shake effect
+            this.cameras.main.shake(200, 0.01);
+            
             obstacle.destroy();
             gameSettings.lives--;
             this.livesText.setText(`Vite: ${gameSettings.lives}`);
@@ -576,6 +651,15 @@ class GameScene extends Phaser.Scene {
             // Make ship transparent for 3 seconds
             this.isInvulnerable = true;
             this.ship.setAlpha(0.5);
+            
+            // Flash the ship to indicate damage
+            this.tweens.add({
+                targets: this.ship,
+                alpha: { from: 0.5, to: 0.2 },
+                yoyo: true,
+                repeat: 5,
+                duration: 200
+            });
             
             this.time.delayedCall(3000, () => {
                 this.isInvulnerable = false;
