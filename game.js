@@ -205,7 +205,7 @@ class GameScene extends Phaser.Scene {
         // Create player ship - positioned closer to the center
         this.ship = this.physics.add.sprite(config.width / 3, config.height / 2, 'ship');
         this.ship.setCollideWorldBounds(true);
-        //this.ship.setScale(0.15); // Changed from 0.5 to 0.25 (50% smaller)
+        this.ship.setScale(0.95); // Changed from 0.5 to 0.25 (50% smaller)
         // Rotate ship to face right
         this.ship.setAngle(0);
         // Ensure ship is above water
