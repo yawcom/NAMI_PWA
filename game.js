@@ -31,10 +31,10 @@ class StartScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Game instructions text
-        const instructionsText = this.add.text(config.width / 2, config.height / 3-30, 
+        const instructionsText = this.add.text(config.width / 2, config.height / 3-55, 
             'Guida la tua nave pirata attraverso mari insidiosi, raccogli il maggior\n numero di forzieri schiva le isole \nper conquistare la gloria dei sette mari!', {
             fontFamily: 'Arial',
-            fontSize: '16px',
+            fontSize: '14px',
             fontStyle: 'bold',
             color: '#000',
             //stroke: '#fff',
@@ -705,7 +705,7 @@ class GameOverScene extends Phaser.Scene {
         // Game over text
         this.add.text(config.width / 2, config.height / 5, textGameOver, {
             fontFamily: 'Arial',
-            fontSize: '40px',
+            fontSize: '35px',
             fontStyle: 'bold',
             color: '#ffffff',
             stroke: '#000000',
@@ -715,7 +715,7 @@ class GameOverScene extends Phaser.Scene {
         // Final score
         this.add.text(config.width / 2, config.height / 3-30, `Punteggio finale: ${this.finalScore}`, {
             fontFamily: 'Arial',
-            fontSize: '35px',
+            fontSize: '25px',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 4
