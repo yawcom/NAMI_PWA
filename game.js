@@ -20,7 +20,7 @@ class StartScene extends Phaser.Scene {
         this.add.image(0, 0, 'background').setOrigin(0).setDisplaySize(config.width, config.height);
         //this.add.image(0, 0, 'background').setOrigin(0);
         // Game title
-        const titleText = this.add.text(config.width / 2, config.height / 5, 'Raccogli i tesori con Nami', {
+        const titleText = this.add.text(config.width / 2, config.height / 6, 'Raccogli i tesori con Nami', {
             fontFamily: 'Arial',
             fontSize: '35px',
             fontStyle: 'bold',
@@ -30,13 +30,14 @@ class StartScene extends Phaser.Scene {
             align: 'center'
         }).setOrigin(0.5);
 
+        this.add.rectangle( config.width/2, config.height /4, config.width, 80, 0x16213e).setOrigin(0.5, 0.5).setAlpha(0.5);
         // Game instructions text
-        const instructionsText = this.add.text(config.width / 2, config.height / 3-15, 
+        const instructionsText = this.add.text(config.width / 2, config.height / 4, 
             'Guida la tua nave pirata attraverso mari insidiosi, raccogli il maggior\n numero di forzieri schiva le isole \nper conquistare la gloria dei sette mari!', {
             fontFamily: 'Arial',
             fontSize: '14px',
             fontStyle: 'bold',
-            color: '#000',
+            color: '#fff',
             //stroke: '#fff',
             //strokeThickness: 0.5,
             align: 'center',
