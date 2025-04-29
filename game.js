@@ -265,10 +265,10 @@ class GameScene extends Phaser.Scene {
         this.isInvulnerable = false;
 
         // UI elements - positioned horizontally with time left, score center, lives right
-        const uiY = 20; // Y position for all UI elements
+        const uiY = 5; // Y position for all UI elements
         const textStyle = {
             fontFamily: 'Arial',
-            fontSize: '15px',
+            fontSize: '12px',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 4
@@ -286,9 +286,9 @@ class GameScene extends Phaser.Scene {
         // Position UI elements: time left, score center, lives right
         const padding = 50; // Padding from edges
         
-        timeText.setPosition(padding, uiY);
-        scoreText.setPosition(config.width / 2, uiY).setOrigin(0.5, 0); // Center horizontally
-        livesText.setPosition(config.width - padding, uiY).setOrigin(1, 0); // Right aligned
+        timeText.setPosition(config.width / 2, uiY).setOrigin(0.5, 0);
+        scoreText.setPosition(config.width / 2, uiY+20).setOrigin(0.5, 0); // Center horizontally
+        livesText.setPosition(config.width / 2, uiY+40).setOrigin(0.5, 0); // Right aligned
         
         this.scoreText = scoreText;
         this.livesText = livesText;
