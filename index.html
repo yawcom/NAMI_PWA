@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0055aa">
     <meta name="description" content="Guida la tua nave pirata attraverso mari insidiosi e raccogli i tesori!">
     <title>Raccogli i tesori con Nami</title>
@@ -17,11 +18,16 @@
             margin: 0;
             padding: 0;
             height: 100%;
+            width: 100%;
             overflow: hidden;
+            position: fixed;
         }
         #game-container {
             width: 100%;
             height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
     </style>
 </head>
@@ -29,22 +35,38 @@
     <div id="game-container"></div>
     <script src="game.js"></script>
     <script>
-        // Function to hide the address bar
-        function hideAddressBar() {
-            if(document.documentElement.scrollHeight > window.outerHeight) {
-                setTimeout(function() {
-                    window.scrollTo(0, 1);
-                }, 0);
+        // Function to hide the address bar and go fullscreen
+        function goFullScreen() {
+            // Scroll to hide address bar
+            window.scrollTo(0, 1);
+            
+            // Try to enter fullscreen mode
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) {
+                document.documentElement.msRequestFullscreen();
             }
         }
         
         // Hide address bar on page load
-        window.addEventListener('load', hideAddressBar);
-        // Hide address bar when orientation changes
-        window.addEventListener('orientationchange', hideAddressBar);
-        // Try to hide address bar when window is resized
-        window.addEventListener('resize', hideAddressBar);
+        window.addEventListener('load', function() {
+            // Short delay to ensure page is fully loaded
+            setTimeout(goFullScreen, 100);
+        });
         
+        // Try again on orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(goFullScreen, 100);
+        });
+        
+        // Try again on resize
+        window.addEventListener('resize', goFullScreen);
+        
+        // Try again on first user interaction
+        document.addEventListener('click', goFullScreen, {once: true});
+        document.addEventListener('touchstart', goFullScreen, {once: true});
         // Register service worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
