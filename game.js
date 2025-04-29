@@ -205,7 +205,7 @@ class GameScene extends Phaser.Scene {
         // Create player ship - positioned closer to the center
         this.ship = this.physics.add.sprite(config.width / 3, config.height / 2, 'ship');
         this.ship.setCollideWorldBounds(true);
-        this.ship.setScale(0.15); // Changed from 0.5 to 0.25 (50% smaller)
+        //this.ship.setScale(0.15); // Changed from 0.5 to 0.25 (50% smaller)
         // Rotate ship to face right
         this.ship.setAngle(0);
         // Ensure ship is above water
@@ -395,7 +395,7 @@ class GameScene extends Phaser.Scene {
         if (Phaser.Math.Between(0, 1) === 0) {
             const y = Phaser.Math.Between(50, config.height - 50);
             const chest = this.chests.create(config.width + 50, y, 'chest');
-            chest.setScale(0.08);
+            //chest.setScale(0.08);
             
             // Add glass effect to chest
             this.addGlassEffect(chest);
@@ -415,7 +415,7 @@ class GameScene extends Phaser.Scene {
     
     addGlassEffect(chest) {
         // Set chest to be slightly transparent
-        chest.setAlpha(0.85);
+        chest.setAlpha(0.90);
         
         // Add a slight tint to give it a glass-like appearance
         chest.setTint(0xc0e8ff);
@@ -558,7 +558,7 @@ class GameScene extends Phaser.Scene {
 
     collectChest(ship, chest) {
         // Only collect the chest if the ship is passing over it (ship's y position is above the chest)
-        if (ship.x < chest.x) {
+        if (ship.x > chest.x) {
             // Create the +10 score text effect at the chest's position
             const scorePopup = this.add.text(chest.x, chest.y, '+10 punti!!', {
                 fontFamily: 'Arial',
