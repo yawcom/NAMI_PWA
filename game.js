@@ -31,7 +31,7 @@ class StartScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Game instructions text
-        const instructionsText = this.add.text(config.width / 2, config.height / 3-55, 
+        const instructionsText = this.add.text(config.width / 2, config.height / 3-15, 
             'Guida la tua nave pirata attraverso mari insidiosi, raccogli il maggior\n numero di forzieri schiva le isole \nper conquistare la gloria dei sette mari!', {
             fontFamily: 'Arial',
             fontSize: '14px',
