@@ -1,0 +1,24 @@
+{
+    "name": "Raccogli i tesori con Nami",
+    "short_name": "Nami",
+    "description": "Guida la tua nave pirata attraverso mari insidiosi e raccogli i tesori!",
+    "start_url": "./index.html",
+    "display": "fullscreen",
+    "background_color": "#0055aa",
+    "theme_color": "#0055aa",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "assets/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "assets/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
