@@ -698,7 +698,7 @@ class GameOverScene extends Phaser.Scene {
 
     create() {
         // Add background based on score
-        const bgKey = this.finalScore < 120 ? 'bg1' : 'bg2';
+        const bgKey = this.finalScore < 200 ? 'bg1' : 'bg2';
         this.add.image(0, 0, bgKey).setOrigin(0).setDisplaySize(config.width, config.height);
 
         const textGameOver = this.finalScore < 200 ? 'Game Over' : 'Hai Vinto!';
