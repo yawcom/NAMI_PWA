@@ -20,7 +20,7 @@ class StartScene extends Phaser.Scene {
         this.add.image(0, 0, 'background').setOrigin(0).setDisplaySize(config.width, config.height);
         //this.add.image(0, 0, 'background').setOrigin(0);
         // Game title
-        const titleText = this.add.text(config.width / 2, config.height / 6, 'Raccogli i tesori con Nami', {
+        const titleText = this.add.text(config.width / 2, config.height / 8, 'Raccogli i tesori con Nami', {
             fontFamily: 'Arial',
             fontSize: '35px',
             fontStyle: 'bold',
