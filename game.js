@@ -415,7 +415,7 @@ class GameScene extends Phaser.Scene {
     
     addGlassEffect(chest) {
         // Set chest to be slightly transparent
-        chest.setAlpha(0.90);
+        chest.setAlpha(0.97);
         
         // Add a slight tint to give it a glass-like appearance
         chest.setTint(0xc0e8ff);
@@ -701,7 +701,7 @@ class GameOverScene extends Phaser.Scene {
         const bgKey = this.finalScore < 120 ? 'bg1' : 'bg2';
         this.add.image(0, 0, bgKey).setOrigin(0).setDisplaySize(config.width, config.height);
 
-        const textGameOver = this.finalScore < 120 ? 'Game Over' : 'Hai Vinto!';
+        const textGameOver = this.finalScore < 200 ? 'Game Over' : 'Hai Vinto!';
         // Game over text
         this.add.text(config.width / 2, config.height / 5, textGameOver, {
             fontFamily: 'Arial',
