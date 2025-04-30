@@ -35,7 +35,7 @@ class StartScene extends Phaser.Scene {
         const instructionsText = this.add.text(config.width / 2, config.height / 4, 
             'Guida la tua nave pirata attraverso mari insidiosi, raccogli il maggior\n numero di forzieri schiva le isole \nper conquistare la gloria dei sette mari!', {
             fontFamily: 'Arial',
-            fontSize: '14px',
+            fontSize: '15px',
             fontStyle: 'bold',
             color: '#fff',
             //stroke: '#fff',
@@ -184,6 +184,9 @@ class GameScene extends Phaser.Scene {
             });
         }
         
+                // Aggiungi terra ferma nella parte inferiore
+                //this.createLandscape();
+
         // Add some random sparkles for water highlights
         this.sparkles = [];
         for (let i = 0; i < 50; i++) {
@@ -206,11 +209,11 @@ class GameScene extends Phaser.Scene {
         // Create player ship - positioned closer to the center
         this.ship = this.physics.add.sprite(config.width / 3, config.height / 2, 'ship');
         this.ship.setCollideWorldBounds(true);
-        this.ship.setScale(0.95); // Changed from 0.5 to 0.25 (50% smaller)
+        this.ship.setScale(0.80); // Changed from 0.5 to 0.25 (50% smaller)
         // Rotate ship to face right
         this.ship.setAngle(0);
         // Ensure ship is above water
-        this.ship.setDepth(1);
+        //this.ship.setDepth(1);
 
         // Create groups for chests and obstacles
         this.chests = this.physics.add.group();
@@ -223,19 +226,52 @@ class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.ship, this.chests, this.collectChest, null, this);
         this.physics.add.overlap(this.ship, this.obstacles, this.hitObstacle, null, this);
 
-        // Set up touch input - now only controls vertical movement
+
+        // Implementazione del controllo con swipe
+        this.input.on('pointerdown', (pointer) => {
+            this.dragStartY = pointer.y;
+            this.isDragging = true;
+        });
+
         this.input.on('pointermove', (pointer) => {
-            if (pointer.isDown) {
-                // Only allow vertical movement (up and down)
-                // Adjust the clamp values to allow movement closer to the edges
-                const padding = 25; // Small padding from the very edge
-                this.ship.y = Phaser.Math.Clamp(
-                    pointer.y, 
-                    padding, 
-                    config.height - padding
-                );
+            if (this.isDragging) {
+                // Calcola la differenza tra la posizione attuale e quella iniziale
+                const dragDelta = pointer.y - this.dragStartY;
+                
+                // Aggiorna la posizione della nave solo se c'è un movimento significativo (swipe)
+                if (Math.abs(dragDelta) > 5) {
+                    // Aggiorna la posizione della nave in base al movimento dello swipe
+                    const newY = this.ship.y + dragDelta * 0.5; // Moltiplica per un fattore per controllare la sensibilità
+                    
+                    // Limita il movimento verticale per evitare la terra e il bordo superiore
+                    const topPadding = 25;
+                    const bottomLimit = this.landY ? this.landY - 25 : config.height - 25;
+                    
+                    this.ship.y = Phaser.Math.Clamp(newY, topPadding, bottomLimit);
+                    
+                    // Aggiorna il punto di partenza per il prossimo calcolo
+                    this.dragStartY = pointer.y;
+                }
             }
         });
+
+        this.input.on('pointerup', () => {
+            this.isDragging = false;
+        });
+
+        // mmmm Set up touch input - now only controls vertical movement
+        //this.input.on('pointermove', (pointer) => {
+        //    if (pointer.isDown) {
+        //        // Only allow vertical movement (up and down)
+        //        // Adjust the clamp values to allow movement closer to the edges
+        //        const padding = 25; // Small padding from the very edge
+        //        this.ship.y = Phaser.Math.Clamp(
+        //            pointer.y, 
+        //            padding, 
+        //            config.height - padding
+        //        );
+        //    }
+        //});
 
         // Game timer
         this.timeLeft = gameSettings.gameTime;
@@ -396,7 +432,7 @@ class GameScene extends Phaser.Scene {
         if (Phaser.Math.Between(0, 1) === 0) {
             const y = Phaser.Math.Between(50, config.height - 50);
             const chest = this.chests.create(config.width + 50, y, 'chest');
-            //chest.setScale(0.08);
+            chest.setScale(0.80);
             
             // Add glass effect to chest
             this.addGlassEffect(chest);
@@ -675,6 +711,205 @@ class GameScene extends Phaser.Scene {
             }
         }
     }
+
+    createLandscape() {
+        // Crea un gruppo per la terra
+        this.landGroup = this.add.group();
+        
+        // Altezza della terra
+        const landHeight = 15//config.height * 0.15;
+        const landY = config.height - landHeight;
+        
+        // Crea la base della terra
+        const land = this.add.graphics();
+        land.fillStyle(0x8B4513, 1); // Marrone per la terra
+        land.fillRect(0, landY, config.width, landHeight);
+        
+        // Aggiungi dettagli alla terra
+        land.fillStyle(0x654321, 0.7);
+        
+        // Crea una linea irregolare per il bordo superiore della terra
+        const points = [];
+        const segments = 20;
+        const segmentWidth = config.width / segments;
+        
+        for (let i = 0; i <= segments; i++) {
+            const x = i * segmentWidth;
+            const y = landY + Phaser.Math.Between(-10, 5);
+            points.push(new Phaser.Geom.Point(x, y));
+        }
+        
+        // Disegna il bordo superiore irregolare
+        land.beginPath();
+        land.moveTo(points[0].x, points[0].y);
+        
+        for (let i = 1; i < points.length; i++) {
+            land.lineTo(points[i].x, points[i].y);
+        }
+        
+        land.lineTo(config.width, landY + landHeight);
+        land.lineTo(0, landY + landHeight);
+        land.closePath();
+        land.fillPath();
+        
+        // Aggiungi vegetazione più realistica
+        // Crea strati di vegetazione per dare profondità
+        const vegetationLayers = 3;
+        const plantsPerLayer = 8;
+        const treeColors = [0x004400, 0x005500, 0x006600, 0x007700];
+        const bushColors = [0x003300, 0x004400, 0x005500, 0x006600];
+        
+        for (let layer = 0; layer < vegetationLayers; layer++) {
+            // Ogni strato ha una profondità diversa
+            const layerDepth = 0.9 + (layer * 0.01);
+            const layerScale = 1 - (layer * 0.2); // Gli strati più lontani sono più piccoli
+            const layerAlpha = 1 - (layer * 0.15); // Gli strati più lontani sono più trasparenti
+            
+            for (let i = 0; i < plantsPerLayer; i++) {
+                const x = Phaser.Math.Between(0, config.width);
+                const y = landY - Phaser.Math.Between(2, 12);
+                
+                const vegetation = this.add.graphics();
+                vegetation.setDepth(layerDepth);
+                vegetation.setAlpha(layerAlpha);
+                
+                // Scegli casualmente tra diversi tipi di vegetazione
+                const plantType = Phaser.Math.Between(0, 3);
+                
+                if (plantType === 0) {
+                    // Albero più dettagliato
+                    const treeColor = treeColors[Phaser.Math.Between(0, treeColors.length - 1)];
+                    const trunkHeight = Phaser.Math.Between(15, 25) * layerScale;
+                    const trunkWidth = Phaser.Math.Between(2, 4) * layerScale;
+                    const leafSize = Phaser.Math.Between(10, 15) * layerScale;
+                    
+                    // Tronco
+                    vegetation.fillStyle(0x5C4033, 1);
+                    vegetation.fillRect(x - (trunkWidth/2), y - trunkHeight, trunkWidth, trunkHeight);
+                    
+                    // Fogliame (più strati per dare volume)
+                    vegetation.fillStyle(treeColor, 0.9);
+                    vegetation.fillCircle(x, y - trunkHeight, leafSize);
+                    vegetation.fillStyle(treeColor, 0.8);
+                    vegetation.fillCircle(x - leafSize/3, y - trunkHeight - leafSize/3, leafSize * 0.8);
+                    vegetation.fillStyle(treeColor, 0.7);
+                    vegetation.fillCircle(x + leafSize/3, y - trunkHeight - leafSize/4, leafSize * 0.7);
+                } 
+                else if (plantType === 1) {
+                    // Cespuglio più dettagliato
+                    const bushColor = bushColors[Phaser.Math.Between(0, bushColors.length - 1)];
+                    const bushSize = Phaser.Math.Between(5, 10) * layerScale;
+                    
+                    // Crea un cespuglio con più cerchi sovrapposti
+                    vegetation.fillStyle(bushColor, 0.9);
+                    vegetation.fillCircle(x, y, bushSize);
+                    vegetation.fillStyle(bushColor, 0.8);
+                    vegetation.fillCircle(x - bushSize/2, y - bushSize/4, bushSize * 0.7);
+                    vegetation.fillStyle(bushColor, 0.7);
+                    vegetation.fillCircle(x + bushSize/2, y - bushSize/3, bushSize * 0.6);
+                }
+                else if (plantType === 2) {
+                    // Fiori o erba alta
+                    const stemHeight = Phaser.Math.Between(5, 10) * layerScale;
+                    
+                    // Stelo
+                    vegetation.lineStyle(1 * layerScale, 0x006600, 0.8);
+                    vegetation.lineBetween(x, y, x, y - stemHeight);
+                    
+                    // Fiore o foglia
+                    if (Phaser.Math.Between(0, 1) === 0) {
+                        // Fiore
+                        const flowerColors = [0xFFFF00, 0xFF6347, 0xDA70D6, 0xFF69B4];
+                        const flowerColor = flowerColors[Phaser.Math.Between(0, flowerColors.length - 1)];
+                        vegetation.fillStyle(flowerColor, 0.9);
+                        vegetation.fillCircle(x, y - stemHeight, 2 * layerScale);
+                    } else {
+                        // Foglia
+                        vegetation.fillStyle(0x008800, 0.8);
+                        vegetation.fillTriangle(
+                            x, y - stemHeight,
+                            x + 4 * layerScale, y - stemHeight + 2 * layerScale,
+                            x, y - stemHeight + 4 * layerScale
+                        );
+                    }
+                }
+                else {
+                    // Palma o pianta esotica
+                    const trunkHeight = Phaser.Math.Between(20, 30) * layerScale;
+                    const trunkWidth = Phaser.Math.Between(2, 3) * layerScale;
+                    
+                    // Tronco leggermente curvo
+                    vegetation.fillStyle(0x8B5A2B, 1);
+                    
+                    // Disegna un tronco curvo usando più rettangoli
+                    const segments = 5;
+                    const curveFactor = Phaser.Math.Between(-3, 3) * layerScale;
+                    
+                    for (let s = 0; s < segments; s++) {
+                        const segmentHeight = trunkHeight / segments;
+                        const segmentY = y - (s * segmentHeight);
+                        const offsetX = Math.sin((s / segments) * Math.PI) * curveFactor;
+                        
+                        vegetation.fillRect(
+                            x - (trunkWidth/2) + offsetX, 
+                            segmentY - segmentHeight, 
+                            trunkWidth, 
+                            segmentHeight
+                        );
+                    }
+                    
+                    // Foglie di palma
+                    vegetation.fillStyle(0x008800, 0.8);
+                    
+                    // Numero di foglie
+                    const numLeaves = Phaser.Math.Between(3, 5);
+                    const leafLength = Phaser.Math.Between(10, 15) * layerScale;
+                    
+                    for (let l = 0; l < numLeaves; l++) {
+                        const angle = (l / numLeaves) * Math.PI;
+                        const leafX = x + Math.cos(angle) * leafLength;
+                        const leafY = y - trunkHeight + Math.sin(angle) * leafLength/2;
+                        
+                        vegetation.lineBetween(x, y - trunkHeight, leafX, leafY);
+                        
+                        // Aggiungi dettagli alle foglie
+                        vegetation.fillStyle(0x009900, 0.7);
+                        vegetation.fillTriangle(
+                            x, y - trunkHeight,
+                            leafX, leafY,
+                            leafX + Math.cos(angle + 0.2) * 5 * layerScale, 
+                            leafY + Math.sin(angle + 0.2) * 5 * layerScale
+                        );
+                    }
+                }
+                
+                this.landGroup.add(vegetation);
+            }
+        }
+        
+        
+        // Imposta la profondità per assicurarsi che la terra sia sopra l'acqua ma sotto gli altri elementi
+        land.setDepth(0.8);
+        this.landGroup.setDepth(0.9);
+        
+        // Modifica i limiti di movimento della nave per evitare la collisione con la terra
+        const shipPadding = 25;
+        const shipBottomLimit = landY - shipPadding;
+        
+        // Aggiorna l'evento di input per limitare il movimento verticale
+        this.input.off('pointermove'); // Rimuovi l'evento esistente
+        this.input.on('pointermove', (pointer) => {
+            if (pointer.isDown) {
+                // Limita il movimento verticale per evitare la terra
+                const padding = 25; // Padding dal bordo superiore
+                this.ship.y = Phaser.Math.Clamp(
+                    pointer.y, 
+                    padding, 
+                    shipBottomLimit
+                );
+            }
+        });
+    }
 }
 
 // Game Over Scene
@@ -796,6 +1031,8 @@ let gameSettings = {
     gameWidth: config.width,
     gameHeight: config.height
 };
+
+
 
 // Initialize the game
 const game = new Phaser.Game(config);
