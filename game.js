@@ -41,7 +41,7 @@ class StartScene extends Phaser.Scene {
             //stroke: '#fff',
             //strokeThickness: 0.5,
             align: 'center',
-            wordWrap: { width: config.width * 0.8 }
+            //wordWrap: { width: config.width * 0.8 }
         }).setOrigin(0.5);//.setShadow(2, 2, '#000000', 2, false, true);
 
         instructionsText.setText('');
