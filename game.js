@@ -104,9 +104,19 @@ class StartScene extends Phaser.Scene {
 
         // Start game on button click
         startButtonBg.on('pointerdown', () => {
+			this.registraPartita();
             this.scene.start('GameScene');
         });
-    }
+	}
+	
+	// Funzione per registrare la partita
+    registraPartita() {
+		const url = 'https://script.google.com/macros/s/AKfycbya7GidybLreaB9P7-dXhA6vg-5QpIUekeJz2E0xSkqkuoJPn6aNNH_WGBP1PgnkwryLw/exec';
+		fetch(`${url}?evento=NAMI`)
+			.then(response => response.text())
+			.then(data => console.log('NAMI:', data))
+			.catch(error => console.error('Errore durante la registrazione della partita:', error));
+	}
 }
 
 // Game Scene
